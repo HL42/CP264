@@ -1,0 +1,284 @@
+C compiling four steps:(will be on mid/final)
+	1. Pre-processing: Resolve lines with pre-processor directives, line start with #
+	2. Compilation: Convert the C program into assembly program
+	3. Assembling: convert the assembly to binary format, called object program
+	4. Linking: link necessary object programs to create an executable program, a binary machine code program
+
+除数其中一边有小数 则结果为小数
+
+char: 
+32: 占一位
+64: 占一位
+
+short: 
+32: 2
+64: 2
+
+int :
+32: 4
+64: 4
+
+long:
+32: 4
+64: 8
+
+float:
+32: 4
+64: 8
+
+double:
+32: 8
+64: 8
+
+pointer:（特殊变量）
+存放内存地址的变量
+
+非声明指针变量的场景下：* 为解指针
+
+& = 取地址符
+
+特殊指针：
+NULL 指针:空指针
+int *p = NULL;
+
+Generic point 泛指针:
+void *p;
+
+双指针：
+
+
+
+Array:
+a[1] == *(a+1)
+*(a+1) == a + 1 = a+1*4
+相对来说指针比数组快
+数组可以直接赋值
+
+动态数组：
+int length = 5;
+int *a = (int *)malloc(sizeof(int)*length);
+
+
+String:
+The end of string is marked by the null character ‘\0’ 
+
+字符串遍历
+void print_string(char *s) {
+    while (*s != '\0') {
+        printf("%c", *s);
+        s++;
+    }
+}
+// 等价简写：while (*s) { printf("%c", *s++); }
+
+字符串拷贝
+void my_strcpy(char *dest, const char *src) {
+    while ((*dest++ = *src++) != '\0'); // 逐个字符复制，包括 '\0'
+}
+
+字符串比较（字典序）
+int my_strcmp(const char *s1, const char *s2) {
+    while (*s1 && *s2 && *s1 == *s2) {
+        s1++;
+        s2++;
+    }
+    return (*s1 > *s2) ? 1 : (*s1 < *s2) ? -1 : 0;
+}
+
+字符串反转
+void reverse_string(char *s) {
+    char *end = s;
+    while (*end) end++; // 找到 '\0' 位置
+    end--;              // 回退到最后一个有效字符
+    
+    while (s < end) {
+        char temp = *s;
+        *s++ = *end;
+        *end-- = temp;
+    }
+}
+
+String operation:
+-Reading strings from stdio (keyboard)
+stdio has three functions for getting input from stdin keyboard.
+ - getchar() – get and return a character from keyboard
+ - gets(*p) – get a string for keyboard and store in p
+ - scanf("%s", char *p) – get string from keyboard,
+ - fgets(str)	安全	读取指定长度	fgets(str, 20, stdin);
+
+strlen(const char*) - 返回字符串长度 - strlen("Hello") → 5	
+
+strcpy(dest, src) - 字符串复制 - strcpy(dest, "cp264")
+
+strcat(dest, src) - 字符串拼接 - strcat(str, " World")
+
+strcmp(s1, s2) - 字符串比较 - strcmp("Apple", "Banana") → -1
+
+strstr(s1, s2) - 查找子串 - strstr("Hello", "lo") → 指向 "lo" 的地址
+
+strtok(str, delim) - 分割字符串 - 首次调用需传入字符串，后续用 NULL
+char str[] = "cp264,Data Structures;2024";
+char *token = strtok(str, ",; "); // 分隔符为逗号、分号、空格
+
+while (token != NULL) {
+    printf("%s\n", token);
+    token = strtok(NULL, ",; ");
+}
+// 输出：
+// cp264
+// Data
+// Structures
+// 2024
+
+
+User define types: Structure（结构体）类似java的类去除方法部分
+自定义：设计图纸
+多个变量的集合
+Structure: 有返回值 有参数
+struct Person {
+    int age;
+    char name[20];
+};
+
+初始化
+struct 结构体名 变量名;
+struct Person p;
+
+如何赋值：
+p.age = 20;
+p.name = "Tom";
+
+struct point *pp;
+(*pp).x = 10;
+也可以写成
+pp->x = 10;
+
+Typedef:
+typedef 数据类型 别名
+typedef int zx
+
+typedef struct xx {
+
+}别名
+
+typedef struct{
+
+}别名
+用完这个后就不需要再加struct来声明结构体
+
+
+Union: 
+union Data {
+    int i;
+    double d;
+    char str[20];
+};
+union Data data; // 声明联合体变量
+
+it can hold different types of data, but can only hold one type of data at a time. 声明不同数据类型的变量可以共享同一个内存空间。
+所有成员共享同一块内存，同一时间只能存储一个成员的值。
+
+允许将不同类型的数据存储在一个变量中
+
+Enum:
+const int colors[] = {
+    0x00000001, // 紫色
+    0x00000002, // 灰色
+    ...,
+    0xFF00FF00; // 黄色
+};
+
+enum color {
+    red, green, blue; 
+};
+方便地访问多个有限类型的变量
+
+strcpy: String copy用于复制
+
+sizeOf = 返回在内存中占的字节数
+size_t = 返回类型所占的内存大小
+
+内存分类：
+1. 静态/全局内存
+2. 自动内存（stack)(栈内存）不受控制
+3. 动态内存（heap)(堆内存）受控制（Pointers are used in dynamic memory allocation and management.)
+
+malloc(memory allocate): 动态内存分配
+void* malloc(size_t);
+如果成功：返回堆内存上分配的内存指针
+如果失败：返回空指针NULL
+
+int *p  = (int*)malloc(sizeof(int));
+*p = 3;
+printf("%d", *p);
+free(p);
+
+free: 释放动态内存
+
+时间复杂度
+
+空间复杂度
+ABT
+
+Linked lists(链表){
+    是一种动态数据结构(dynamic data structure)
+    与数组不同，这个是由指针将每个元素（节点）连接起来。
+}
+
+Node:
+ - 包含两个部分
+  - 数据域(Data): 存储实际的数据
+  - 指针域(Next): 指向下一个节点的地址
+ - 头节点(Head): Linked list的开始节点，通常指向第一个字节的指针.
+ - 尾节点(Tail): Linked list的结束节点，它的next通常指向NULL,表示链表结束。
+
+1.Singly Linked List: 每个节点只有一个指针，指向下一个节点
+a. 首先要用结构体定义节点:
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+b. 创建节点:
+(我们需要一个函数来动态分配内存 并创建新的节点)(dynamic strcutre)
+struct Node* createNode(int value){
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL; // 初始时，指针域为空
+    return newNode;
+}
+
+c. 插入节点:
+我们在链表的头部，尾部或者中间插入节点
+void insertAtHead(struct Node** head, int value){
+    struct Node* newNode = createNode(value);
+    newNode->next = *head; // 新节点指向当前节点
+    *head = newNode;
+}
+
+
+
+
+
+2.Doubly Linked List: 每个节点有两个指针，分别指向前一个节点和后一个节点
+
+
+
+
+QUEUE;
+
+STACK:ABT
+LIFO
+- When the stack is empty:(Underflow) top = -1
+- When the stack is full:(Overflow) top = max - 1
+
+tree
+A tree data structure is the implement of an abstract tree in programming language.
+
+1. Nodes(Vertices)
+2. Nodes-to-nodes (Edges)
+
+Tree T satisfies the following conditions.
+1. Each node has zero or more children.
+2. There is a unique node without parent, called root. 
+3. There is a unique path from the root to any other node. A path connecting node n to the root is called a root-to-node path.

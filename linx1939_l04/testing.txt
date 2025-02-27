@@ -1,0 +1,19 @@
+------------------------
+Test read_strings
+
+lines read: 3
+
+Contents of string array
+------------------------
+A short line
+A longer line
+A really long line that never seems to end and goes on and on
+
+------------------------
+Test strings_with_substring
+
+Enter substring: Second 
+------------------------
+Test strings_length
+
+Enter the length comparison value: 16
