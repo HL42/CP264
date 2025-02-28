@@ -267,10 +267,42 @@ void insertAtHead(struct Node** head, int value){
 
 QUEUE;
 
+
 STACK:ABT
 LIFO
 - When the stack is empty:(Underflow) top = -1
 - When the stack is full:(Overflow) top = max - 1
+
+两种实现方法
+ 1.Array stack
+ 用一个数组存储元素，一个变量top记录栈顶位置。
+    例子 ：
+    假设数组最大容量是 3：
+    初始状态：数组为空，top = -1（表示空栈）。
+    Push 10 → top=0，数组[0]=10  
+    Push 20 → top=1，数组[1]=20  
+    Push 30 → top=2，数组[2]=30  
+    Pop → 移除30，top=1  
+    缺点 ：数组大小固定，满了就不能再 Push（溢出 ）。
+
+2. linked List stack
+    用链表的头节点作为栈顶，每次 Push 插入到头部，Pop 删除头节点。
+    Push 10 → 链表：10 → NULL  
+    Push 20 → 链表：20 → 10 → NULL  
+    Push 30 → 链表：30 → 20 → 10 → NULL  
+    Pop → 移除30，链表变为 20 → 10 → NULL  
+    优点 ：动态扩容，不会溢出（除非内存用完）。
+
+Stack Application
+ - Infix
+    运算符在两个操作数中间，比如 3 + 4。
+    问题 ：需要括号解决优先级问题，计算机处理起来麻烦。
+ - Postfix
+    运算符在操作数后面，比如 3 4 +。
+    优点 ：不需要括号，计算机用栈直接计算。
+ - Prefix
+    运算符在操作数前面，比如 + 3 4。
+    用途 ：某些编程语言（如Lisp）使用。
 
 tree
 A tree data structure is the implement of an abstract tree in programming language.
