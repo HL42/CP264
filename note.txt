@@ -314,3 +314,16 @@ Tree T satisfies the following conditions.
 1. Each node has zero or more children.
 2. There is a unique node without parent, called root. 
 3. There is a unique path from the root to any other node. A path connecting node n to the root is called a root-to-node path.
+
+AVL Tree:
+ -It is height-balanced BST and self-balacing insert and delete operations.
+ Step1:
+    - Do BST insert/delete operations
+Step2:
+    - Do AVL Rotation
+
+Time complexity:
+ -Insert and Delete operation is O(logn)
+ Space complexity:
+ -Insert and Delete operation is o(1)
+ 
