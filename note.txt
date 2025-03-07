@@ -326,4 +326,15 @@ Time complexity:
  -Insert and Delete operation is O(logn)
  Space complexity:
  -Insert and Delete operation is o(1)
+
+
+BFS (Breadth-First Search)(广度优先搜索):
+ - BFS就像一层层扫楼，先找第一层（根节点），再找第二层，第三层... 直到找到目标。
+
+DFS (Depth-First Search)(深度优先搜索):
+ - DFS就像一根筋钻到底，先往左子树最深处找，找不到再回溯，换右子树继续钻。
  
+BFS遍历顺序 ：1 → 2 → 3 → 4 → 5 → 6
+（一层层来，像扫雷）
+DFS遍历顺序 ：1 → 2 → 4 → 5 → 3 → 6
+（先钻到最左，再回溯）
