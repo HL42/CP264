@@ -1,0 +1,97 @@
+hl@42deMacBook-Air linx1939_a8 % ./q3
+------------------
+Test: avl_merge
+
+is_avl(avlA): 1
+is_avl(avlB): 1
+avl_merge(avlA avlB): 1
+------------------
+Test: avlds_merge
+
+display_stats(avldsA): count 10 mean 55.0 stddev 28.7
+display_stats(avldsB): count 10 mean 55.0 stddev 28.7
+display_stats(avldsC): count 20 mean 55.0 stddev 28.7
+avlds_merge(avldsA avldsB)-display_stats(avldsA): count 20 mean 55.0 stddev 28.7
+avldsA.count: 20
+avldsA.mean: 55.0
+avldsA.stddev: 28.7
+avldsB.count: 0
+avldsB.mean: 0.0
+avldsA.count==avldsC.count: 1
+avldsA.mean==avldsC.mean: 1
+avldsA.stddev==avldsC.stddev: 1
+
+hl@42deMacBook-Air linx1939_a8 % ./q2
+------------------
+Test: set_size
+
+set_add_set_size(a): 1 a 
+set_add_set_size(b): 2 a b 
+set_remove_set_size(a): 1 b 
+set_remove_set_size(b): 0 
+
+------------------
+Test: set_add
+
+set_add(a):a 
+set_add(a):a 
+set_add(b):a b 
+set_add(c):a b c 
+set_add(d):a b c d 
+set_add(aa):a aa b c d 
+set_add(bb):a aa b bb c d 
+set_add(cc):a aa b bb c cc d 
+set_add(dd):a aa b bb c cc d dd 
+------------------
+Test: set_contain 
+
+set_contain(a): 1
+set_contain(aa): 1
+set_contain(A): 0
+
+------------------
+Test: set_remove
+
+set_remove(a): aa b bb c cc d dd 
+set_remove(aa): b bb c cc d dd 
+set_remove(A): b bb c cc d dd 
+
+hl@42deMacBook-Air linx1939_a8 % ./q1
+------------------
+Test: avl_insert
+
+avl_insert(A01 10.0):A01 10.0 
+avl_insert(A02 20.0):A01 10.0 A02 20.0 
+avl_insert(A03 30.0):A01 10.0 A02 20.0 A03 30.0 
+avl_insert(A04 40.0):A01 10.0 A02 20.0 A03 30.0 A04 40.0 
+avl_insert(A05 50.0):A01 10.0 A02 20.0 A03 30.0 A04 40.0 A05 50.0 
+avl_insert(A06 60.0):A01 10.0 A02 20.0 A03 30.0 A04 40.0 A05 50.0 A06 60.0 
+avl_insert(A07 70.0):A01 10.0 A02 20.0 A03 30.0 A04 40.0 A05 50.0 A06 60.0 A07 70.0 
+
+|___:A04,40.0,3
+    |___R:A06,60.0,2
+        |___R:A07,70.0,1
+        |___L:A05,50.0,1
+    |___L:A02,20.0,2
+        |___R:A03,30.0,1
+        |___L:A01,10.0,1
+
+height(A04): 3
+balance_factor(A04): 0
+is_avl(A04): 1
+------------------
+Test: avl_search 
+
+avl_search(A02): A02 20.0
+avl_search(A04): A04 40.0
+avl_search(A08): NULL
+
+------------------
+Test: avl_delete
+
+avl_delete(A01): A02 20.0 A03 30.0 A04 40.0 A05 50.0 A06 60.0 A07 70.0 
+avl_delete(A03): A02 20.0 A04 40.0 A05 50.0 A06 60.0 A07 70.0 
+avl_delete(A04): A02 20.0 A05 50.0 A06 60.0 A07 70.0 
+height(A05): 3
+balance_factor(A05): -1
+is_avl(A05): 1
