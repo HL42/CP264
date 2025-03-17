@@ -357,5 +357,36 @@ DFS遍历顺序 ：1 → 2 → 4 → 5 → 3 → 6
 先右旋右子树，再左旋失衡节点
 
 
+
+HASH MAP:
+
+Create traditional way to create Hash map:
+ 1. Using arrays, the search time is O(n) in worst case
+ 2. Using AVL trees, the search time is O(log n) in worst case.
+
+hash设计原理：
+目标：均匀分布键，减少碰撞
+
+经典方法：
+除留余数法：h(k) = k % m（m选质数，如97）
+字符串哈希：累加字符ASCII码后取余（课程例子）
+
+解决碰撞的方法：
+ 1.开放寻址法（如线性探测）
+ 2.链式法（如链表）
+
+1. Linear Probing
+冲突时：按顺序找下一个空位（比如往后挨个找）
+探测函数：h(k, i) = (h(k) + i) % m（i是探测次数）
+
+2. Chaining
+原理
+冲突时：在同一个位置挂链表（或树）
+结构：哈希表数组每个元素是链表头指针
+
+
 HEAPS
-- 
+- Bianry HEAPS
+
+
+- Fibonnaci HEAPS
