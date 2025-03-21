@@ -16,6 +16,7 @@
     "ios": "c",
     "stdio.h": "c",
     "queue": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "string.h": "c"
   }
 }
