@@ -215,16 +215,107 @@ free(p);
 
 free: 释放动态内存
 
-时间复杂度
+时间复杂度:
+
+1.常数复杂度O(1)
+2.线性复杂度O(n)
+3. O(n^2)
+4. O(logn)
+5. O(n log n)
+6. O(2^n)
 
 空间复杂度
 ABT
 
+
+数据结构：
+----------------------------
+线性表：
+n个相同类型的数据组合在一起就是线性表 
+特点：
+ -存在唯一的第一个被称作头节点
+ -存在唯一的最后一个被称作尾节点
+
+类型1: 顺序表 (不方便)
+ - 连续的内存单元依次存储各个元素
+
+存储结构
+#define MAXSIZE = 100
+typedef int ElemType;
+
+typedef struct {
+    ElemType data[MAXSIZE];
+    int length;
+}SeqList
+
+// 初始化
+void initList() {
+    L->length = 0; 
+    // 分配内存
+    SeqList *L = (SeqList *)malloc(sizeof(SeqList));
+    L->data = (ElemType *)malloc(sizeof(ElemType) * MAXSIZE);
+    L->length = 0;
+    return L;
+}
+
+// 遍历
+void listElem(SeqList *L){
+    for(int i = 0; i < L->length; i++){
+        printf("%d ", L->data[i]);
+    }
+}
+
+// 在尾部添加元素
+int appendElem (SeqList *L, ElemType e){
+    if(L->length >= MAXSIZE){
+        return 0;
+    }
+
+    L->data[L->length] = e;
+    L->length++;
+    return 1;
+}
+
+// 插入 最好时间复杂度O(1) 最坏时间复杂度O(n)   
+int insertElem(SeqList *L, int pos, ElemType e) {
+    if(pos <= L->Lenght){
+        for(int i = L->length-1; i >= pos - i; i--){
+            L->data[i+1] = L=>data[i];
+        }
+        L->data[pos-1] = e;
+        L->length++;
+    }
+    return 1;
+}
+
+// 删除
+int deleteElem(SeqList *L, int pos, ElemType *e) {
+    *e = L->data[pos-1];
+    if(pos < L->length){
+        for(int i = pos; i < L->length; i++){
+            L->data[i-1] = L->data[i];
+        }
+    }
+    L->length--;
+    return 1;
+}
+
+// 查找子串
+int findElem(SeqList *L, ElemType e, int *pos) {
+    for(int i = 0; i < L->length; i++){
+        if(L->data[i] == e){
+            return i + 1;
+        }
+    }
+    return 0;
+}
+
 Linked lists(链表){
     是一种动态数据结构(dynamic data structure)
     与数组不同，这个是由指针将每个元素（节点）连接起来。
+    可以连续也可以不连续
 }
-
+[][--]->[][--]-> 
 Node:
  - 包含两个部分
   - 数据域(Data): 存储实际的数据
@@ -232,34 +323,134 @@ Node:
  - 头节点(Head): Linked list的开始节点，通常指向第一个字节的指针.
  - 尾节点(Tail): Linked list的结束节点，它的next通常指向NULL,表示链表结束。
 
-1.Singly Linked List: 每个节点只有一个指针，指向下一个节点
-a. 首先要用结构体定义节点:
-struct Node {
-    int data;
+typedef int ElemType;
+typedef stuct {
+    ElemType data;
     struct Node *next;
-};
-
-b. 创建节点:
-(我们需要一个函数来动态分配内存 并创建新的节点)(dynamic strcutre)
-struct Node* createNode(int value){
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = value;
-    newNode->next = NULL; // 初始时，指针域为空
-    return newNode;
 }
 
-c. 插入节点:
-我们在链表的头部，尾部或者中间插入节点
-void insertAtHead(struct Node** head, int value){
-    struct Node* newNode = createNode(value);
-    newNode->next = *head; // 新节点指向当前节点
-    *head = newNode;
+1.Singly Linked List: 每个节点只有一个指针，指向下一个节点
+the last node point to NULL;
+Node can be done in 2 Methods:
+1. Static method: uses declaration to allocate memory for nodes
+2. Dynamic method: uses malloc(sizeof(NODE)) to allocate memory for nodes
+// Dynamic method is the commonly used Methods for creating linked list nodes
+
+Creating a linked list:
+
+1. Create Nodes
+typedef struct node
+{
+    int data;
+    struct node *next;
+}NODE;
+
+2. Dynamic method:
+NODE *p1 = (NODE *)malloc(sizeof(NODE));
+p1->data = 10;
+p1->next = NULL;
+
+// Traversing
+// time complexity: O(n)
+// Space complexity: O(1)
+void display(NODE *start) {
+    NODE *ptr = start;
+    while (ptr != NULL) {
+        printf("%d ", ptr->data);
+        ptr = ptr->next;
+    }
 }
 
+// Recursive Traversing
+// time complexity: O(n)
+// Space complexity: O(n)
+void display_recursive(NODE *start) {
+    if (start == NULL) return;
+    printf("%d ", start->data);
+    display_recursive(start->next);
+}
+
+// Searching through the linked list by a key
+// time complexity: O(n)
+// Space complexity: O(1)
+int key = value;
+NODE *p = start;
+while(p != NULL)
+{
+    if(p->data == key)
+    {
+        break;
+    }
+    p = p->next;
+}
+return p;
+
+Insert Operation:
+1. Insert at the beginning
+2. Insert at the end
+3. Insert after a given position
+4. Insert before a given node
 
 
+1. at the beginning
+// Time O(1), Space O(1)
+NODE* insert_beg(NODE *start, NODE *np//如果已经创建了节点就可以使用这样的方法)
+{
+    np->next = start;
+    start = np;
+    return start;
+}
+
+2. at the end
+// Time O(n), Space O(1)
+void insert_end (NODE **startp, NODE *np) 
+{
+    NODE *ptr = *startp;
+    if(ptr == NULL) 
+    {
+        *startp = np;
+    }
+    while(ptr->next)
+    {
+        ptr = ptr->next;
+        ptr->next = np;
+    }
+}
+
+3. Insert_after
+// Time O(n), Space O(1)
+void insert_after(NODE *start, NODE *np, int key)
+{
+    NODE *ptr = *startp;
+    while(ptr != NULL && ptr->data != key)
+    {
+        ptr = ptr->next;
+    }
+
+    if(ptr != NULL && ptr->data == key){
+        np->next = ptr->next;
+        ptr->next = np;
+    }
+}
+
+// Delete 
+1. First node
+2. Last node
+3. A specific node
+4. Node before/After a specific node
 
 
+1. First Node
+// Time O(1), Space O(1)
+void delete_beg(NODE **startp)
+{
+    NODE *ptr = *startp;
+    if(ptr != NULL) 
+    {
+        *startp = ptr->next;
+        free(ptr);
+    }
+}
 2.Doubly Linked List: 每个节点有两个指针，分别指向前一个节点和后一个节点
 
 
@@ -356,7 +547,26 @@ DFS遍历顺序 ：1 → 2 → 4 → 5 → 3 → 6
 在右子树的左子树插入节点
 先右旋右子树，再左旋失衡节点
 
+Red Black Tree
+- 红黑树（Red-Black Tree）
 
+RBT search, insert, delete operation can be done in time O(log n) and space O(1)
+
+RBG must meat the following properties:
+ 1. Root must be black or red
+ 2. The color of the root node is black, and all NULL child are viewed as black node
+ 3. The child nodes of a red node are black nodes
+ 4. For any node, every path from the node to any of its NULL node has the same number of black nodes
+
+Insertion:
+ Normal insertion case:
+  - If the node is inserted at the root, the node is colored red.
+ Check the parent node color:
+  - If the parent node is red, need to fix the tree
+  - If the parent node is black, 直接插入
+ Method to fix:
+  - Case 1: 叔父节点是红色，重新着色
+  - Case 2: 叔父节点是黑色，旋转 + 变色
 
 HASH MAP:
 
@@ -390,3 +600,12 @@ HEAPS
 
 
 - Fibonnaci HEAPS
+
+
+
+
+FINAL REVIEW:
+Converage: Week 4 - 12
+
+NEED TO KNOW HOW TO BUILD HUFFMAN Tree / Expression tree
+no programming questions on avl tree
