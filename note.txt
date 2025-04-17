@@ -456,7 +456,14 @@ void delete_beg(NODE **startp)
 
 
 
-QUEUE;
+QUEUE: 
+FIFO
+ -ENQUEUE
+ -DEQUEUE
+ -PEEK
+
+
+deques:
 
 
 STACK:ABT
@@ -506,17 +513,50 @@ Tree T satisfies the following conditions.
 2. There is a unique node without parent, called root. 
 3. There is a unique path from the root to any other node. A path connecting node n to the root is called a root-to-node path.
 
-AVL Tree:
- -It is height-balanced BST and self-balacing insert and delete operations.
- Step1:
-    - Do BST insert/delete operations
-Step2:
-    - Do AVL Rotation
+Theorem 1
+1. A perfect binary tree of height h has 2h-1 nodes.
+2. A perfect binary tree of n nodes has height log(n+1). 
+3. A perfect binary tree of n nodes has width (n+1)/2.
 
-Time complexity:
- -Insert and Delete operation is O(logn)
- Space complexity:
- -Insert and Delete operation is o(1)
+二叉树遍历方法（标红核心：前序、中序、后序、广度优先、深度优先）
+
+Pre-oder: 时间 / 空间复杂度：O (n) / O (h)（h 为树高，递归栈深度）。
+先访问根节点，再递归遍历左子树，最后右子树。
+示例：树结构 A(B(D,E), C(F,G)) 的前序为 A, B, D, E, C, F, G。
+递归实现：
+c
+void pre_order(TNODE *root) {
+    if (root) {
+        printf("%d ", root->data); // 根
+        pre_order(root->left);     // 左子树
+        pre_order(root->right);    // 右子树
+    }
+}
+
+In-order: O(n), O(h)
+顺序：先递归遍历左子树，再访问根节点，最后右子树。
+示例：上述树的中序为 D, B, E, A, F, C, G（适用于二叉搜索树，输出有序序列）。
+递归实现：
+c
+void in_order(TNODE *root) {
+    if (root) {
+        in_order(root->left);     // 左子树
+        printf("%d ", root->data); // 根
+        in_order(root->right);    // 右子树
+    }
+}
+
+Pre-order: O(n), O(h)
+先递归遍历左子树，再右子树，最后访问根节点（常用于释放树内存）。
+示例：上述树的后序为 D, E, B, F, G, C, A。
+递归实现：
+c
+void post_order(TNODE *root) {
+    if (root) {
+        post_order(root->left);    // 左子树
+        post_order(root->right);   // 右子树
+        printf("%d ", root->data); // 根
+    }
 
 
 BFS (Breadth-First Search)(广度优先搜索):
@@ -527,25 +567,222 @@ DFS (Depth-First Search)(深度优先搜索):
  
 BFS遍历顺序 ：1 → 2 → 3 → 4 → 5 → 6
 （一层层来，像扫雷）
+顺序：按层访问，从根节点（层 0）开始，逐层从左到右访问。
+示例：上述树的广度优先顺序为 A, B, C, D, E, F, G。
+实现：使用队列存储待访问节点：
+ -根节点入队。
+ -循环出队并访问，将左、右子节点依次入队。
+void display_bforder(TNODE *root) {
+    QUQUE q = {0};
+    enqueue(&q, root);
+    while (q.front) {
+    NODE *p = dequeue(&q);
+    TNODE *tp = p->tnp;
+    printf("%d ", tp->data);
+    enqueue(&q, tp->left);
+    enqueue(&q, tp->right);
+}
+}
+
 DFS遍历顺序 ：1 → 2 → 4 → 5 → 3 → 6
 （先钻到最左，再回溯）
+顺序：与前序类似（根→右→左，取决于入栈顺序），通过栈模拟递归过程。
+实现：
+根节点入栈。
+循环出栈并访问，先压右子节点，再压左子节点（保证左子树先处理）。
 
 
-四种失衡类型及修复方法
-左左 (LL)
+求树的高度：
+高度 = 1 + max (左子树高度，右子树高度)（递归终止条件：空树高度为 0）。
+c
+int tree_height(TNODE *root) {
+    if (!root) return 0;
+    int left_h = tree_height(root->left);
+    int right_h = tree_height(root->right);
+    return 1 + (left_h > right_h ? left_h : right_h);
+}
+
+红黑树	O(log n)	颜色标记 + 旋转 / 重染	较复杂
+AVL 树	O(log n)	严格高度平衡（差值≤1）	中等
+二叉搜索树	O (h)（h 为树高）	无平衡策略
+
+trees are used to represent a collection of data objects for efficient search
+
+霍夫曼树与编码
+用途：数据压缩，通过频率构建最优前缀编码。
+构建过程：
+每个字符作为叶子节点，权重为出现频率。
+每次选两个最小频率的节点作为左右子树，创建父节点（权重 = 两者之和）。
+重复直到只剩一棵树（霍夫曼树）。
+
+BST
+左子树所有节点的键值 小于 根节点键值。
+右子树所有节点的键值 大于或等于 根节点键值。
+
+中序遍历特性：中序遍历 BST 会得到 有序序列（升序），因此 BST 也称为 “有序二叉树”。
+
+Searching
+2 ways
+1st Recursive: 时间复杂度：O (h)（h 为树高），空间复杂度：O (h)（递归栈）
+TNODE *recursive_bst_search(TNODE *root, int key) {
+    if (root==NULL) return NULL;
+    else if (key == root->data) return root;
+    else if (key < root->data)
+    return recursive_bst_search(root->left, key);
+    else
+    return recursive_bst_search(root->right, key);
+}
+
+2nd Iterative: 时间复杂度：O (h)（h 为树高），空间复杂度：O (1)
+TNODE *iterative_bst_search(TNODE *root, int key){
+    TNODE *r = NULL, *p = root;
+    while (p) {
+    if (key == p->data) {
+        r = p; 
+        break;
+    } else if (key < p->data)
+        p = p->left;
+    else
+        p = p->right;
+    }
+    return r;
+}
+
+Insertion
+1st Recursive: 时间复杂度：O (h)，空间复杂度：O (h)
+void recursive_insert(TNODE **rootp, TNODE *newnp) {
+    TNODE *root = *rootp;
+    if (root == NULL) {
+        *rootp = newnp;
+    } else {
+        if (newnp->data < root->data){
+            if (root->left == NULL) root->left = newnp;
+            else recursive_insert(&(root->left), newnp);
+        } else {
+            if (root->right == NULL) root->right = newnp;
+            else recursive_insert(&(root->right), newnp);
+    }
+}
+
+2nd Iterative: 时间复杂度O(h)，空间复杂度O(1)
+void recursive_insert(TNODE **rootp, TNODE *newnp)
+{
+    if(*rootp == NULL)
+    {
+        *rootp = newnp;
+    }
+    else 
+    {
+        TNODE *p = *rootp;
+        while(p) 
+        {
+            if(newnp->data < p->data)
+            {
+                if(p->left == NULL)
+                {
+                    p->left = newnp;
+                    break;
+                }
+                else
+                {
+                    p = p->left;
+                }
+            }
+            else
+            {
+                if(p->right == NULL)
+                {
+                    p->right = newnp;
+                    break;
+                }
+                else
+                {
+                    p = p->right;
+                }
+            }
+        }
+    }
+}
+
+Delete, 最复杂的需要分三种情况
+1st: delete node has no children
+2nd: delete node has one child
+3rd: delete node has two children
+三种情况处理：
+情况 1：删除节点无子女（叶子节点）
+直接删除，无需调整树结构。
+例：删除键值 9 的叶子节点，直接移除。
+情况 2：删除节点只有左子或右子
+用唯一的子节点替代被删除节点的位置。
+例：删除键值 5 的节点（只有右子节点 6），将 6 提升为原 5 的父节点的左子节点。
+情况 3：删除节点有两个子节点
+核心思路：用右子树中的最小键值节点（或左子树中的最大键值节点）替代被删除节点，再删除该替代节点（此时替代节点最多有一个右子节点，转化为情况 2）。
+找到右子树中的最小节点（最左叶子）。
+用该节点的值替换被删除节点的值。
+删除右子树中的最小节点（此时该节点最多有一个右子节点）。
+例：删除键值 7 的节点，用其右子树的最小节点 9 替代，再删除原节点 7。
+
+找出最小值：
+1st recursive: time: O(h), space: O(h)
+TNODE *find_smallest_node(TNODE *root) {
+    if (root == NULL || root->left == NULL) return root;
+    else return find_smalles_element(root->left);
+}
+
+2nd iterative: time: O(h), space: O(1)
+TNODE *find_smallest_node(TNODE *root) {
+    while (root && root->left)
+    root=root->left;
+    return root;
+}
+
+balanced BST:
+A BST is not balanced in general ! The height of BST of
+n node can be n, example BST built by inserting
+1,2,3,4,5.
+
+平衡因子(BF)
+节点左子树高度 - 右子树高度（BF = height(left) - height(right)）
+
+平衡条件：所有节点的 BF 必须为 -1、0 或 1，否则树不平衡。
+左重：BF > 0（左子树更高）。
+右重：BF < 0（右子树更高）。
+
+树高 \(h = O(\log n)\)，确保搜索、插入、删除复杂度为 \(O(\log n)\)。
+
+AVL Tree
+height-balanced binary search tree
+搜索、插入、删除均为 \(O(\log n)\)（时间），\(O(1)\)（空间）。
+
+AVL insertion
+BST 插入：按 BST 规则插入新节点（必为叶子节点）。
+平衡调整：从新节点向上更新路径上节点的高度，找到临界节点（首个 BF 绝对值 > 1 的节点），根据 BF 和子节点 BF 进行旋转。
+
+四种失衡类型及修复方法 2 1
+左左 (LL) 
 在左子树的左子树插入节点（平衡因子>1）
 单右旋
 （以失衡节点为中心）
-右右 (RR)
+右右 (RR) -2 -1
 在右子树的右子树插入节点（平衡因子<-1）
 单左旋
 （以失衡节点为中心）
-左右 (LR)
+左右 (LR) 2 -1
 在左子树的右子树插入节点
 先左旋左子树，再右旋失衡节点
-右左 (RL)
+右左 (RL) -2 1
 在右子树的左子树插入节点
 先右旋右子树，再左旋失衡节点
+
+Case 1: balance-factor(x)=2, balance-factor(x->left)>=0
+action: right-rotation
+Case 2: balance-factor(x) = 2, balance-factor(x->left) < 0,
+action: left-right-rotation
+Case 3: balance-factor(x) = -2, balance-factor(x->right) <=0,
+action: left-rotation
+Case 4: balance-factor(x) = -2, balance-factor(x->right) > 0,
+action: right-left-rotation
+
 
 Red Black Tree
 - 红黑树（Red-Black Tree）
@@ -576,36 +813,642 @@ Create traditional way to create Hash map:
 
 hash设计原理：
 目标：均匀分布键，减少碰撞
+设计一种数据结构，使搜索、插入、删除操作在理想情况下达到 O (1) 时间复杂度。
+最不理想的就是O(n)
+
+装填因子(α) = n(表中元素)/m(表长)
+因子越小会碰撞性越小，但空间利用性很低
 
 经典方法：
-除留余数法：h(k) = k % m（m选质数，如97）
+除留余数法：h(k) = k % m（m选质数，如97）：基本上都是用这个
 字符串哈希：累加字符ASCII码后取余（课程例子）
 
 解决碰撞的方法：
- 1.开放寻址法（如线性探测）
+ 1.开放寻址法（如线性探测）Linear Probing
  2.链式法（如链表）
 
 1. Linear Probing
 冲突时：按顺序找下一个空位（比如往后挨个找）
 探测函数：h(k, i) = (h(k) + i) % m（i是探测次数）
+优点：简单，利用数组缓存局部性（访问连续内存）。
+缺点：易形成聚集（Clustering），导致后续碰撞概率增加。
+插入 / 搜索：最坏 O (m)（哈希表满或全聚集），平均 O (1)（理想分布）。
 
 2. Chaining
 原理
 冲突时：在同一个位置挂链表（或树）
 结构：哈希表数组每个元素是链表头指针
+插入 / 搜索：平均 O (1 + α)，最坏 O (n)（所有键映射到同一索引）
 
+ADVANCE functions
+
+Multiplication method: 乘法法
+选常数A（常取0.6180339887 ），用h(k)= floor (m(kA mod 1))计算哈希值。比如m = 1000 ，k = 12345 ，A = 0.618033时，哈希值是617 。
+
+Mid Square Method: 平方取中法
+先算k² ，再取中间r位当哈希值。m = 100 ，r = 2时，1234平方后是1522756 ，哈希值就是27 。
+
+Folding method: 折叠法
+把键拆成几部分相加，忽略进位得哈希值。哈希表大小为100时，5678拆成56和78 ，相加为134 ，哈希值是34 。
+
+解决碰撞的方法2:
+1. Quatratic Probing: 二次探测
+用h(k, i)=[h'(k)+c1 * i + c2 * i²] mod m找位置（h'(k)=k mod m ，c1、c2 不为 0 ）
+
+2. Double Hashing Porbing: 双重哈希
+用两个哈希函数，公式h(k, i)=[h1(k)+i h2(k)] mod m 。能减少碰撞和聚集，效果较好。
 
 HEAPS
+Heap is a data structure efficient for finding and deleting
+the minimum key element and inserting any element
+
+最小堆（Min-Heap）：每个父节点的键值 小于等于 子节点键值，根节点是全局最小值。
+最大堆（Max-Heap）：每个父节点的键值 大于等于 子节点键值，根节点是全局最大值。
+
+用数组存储时，根节点索引为 0，节点 i 的左孩子是 2i+1，右孩子是 2i+2，父节点是 (i-1)/2。
+
+The property 1 indicates that the root of a min-heap
+holds the data of minimum key. 3
+
+Find min O(1), O(1)
+Insert O(log n), O(1)
+delete min O(log n), O(log n)
+
+HEAP SORT!!!!! Time: O(n log n), Space: O(1)
+
+
 - Bianry HEAPS
+用数组实现的高效完全二叉树
+数组索引：0（根） 1（左孩子） 2（右孩子） 3（左孙子） 4（右孙子）...
+父子关系：
+父节点i的左孩子 = 2i + 1  
+父节点i的右孩子 = 2i + 2  
+子节点i的父节点 = (i-1) // 2  
+
+堆化（Heapify）：
+把一个完全二叉树变成堆：
+从最后一个非叶子节点（索引 n/2-1）开始，向上逐个节点 “向下调整”，确保每个节点比孩子小（最小堆）。
+比如数组 [10,1,4,8,3,7] 堆化后，根节点变成 1，子节点按规则排列。
+
+Binary Heap insertion:
+
+Heapify-up
+插入新元素时用，从下往上修复堆
+
+Binary Heap deletion:
+
+Heapify-down
+删除最值元素后：比如最小堆删除根节点（最小值），用最后一个元素代替根，然后向下调整让它 “下沉” 到正确位置。
+初始堆化（Heapify 数组）：将一个普通完全二叉树转化为堆时，从最后一个非叶子节点开始，自下而上逐个节点向下调整。
 
 
-- Fibonnaci HEAPS
+
+- 二项式堆（Binomial Heaps)
+二项式树（Binomial Tree）的递归定义（标红重点）
+阶 0（Order 0）：仅一个节点，无子女。
+阶 i（Order i）：根节点有 i 个子女，每个子女分别是阶 i-1、i-2、…、0 的二项式树的根。
+例：阶 2 的二项式树由两个阶 1 的树连接而成，根节点有 2 个子女（阶 1 和阶 0 的树根）。
 
 
+GRAPH:
+G = (V, E)
+V = vertices
+E = Edges
+顶点（Vertex）又称节点（Node），边（Edge）又称链接（Link）
 
+无边图(undirceted graph)
+有向图(directed graph)
+出度（out-degree，发起边数）+ 入度（in-degree，终止边数）= 总度。
+加权图(weighted graph)
+非加权图(unweighted graph)
+
+
+Directed Acyclic Graph (DAG): directed graph that contains no directed cycles.
+
+Order = n = |V|
+Size = m = |E|
+简单图：无多重边和环的无向非加权图
+完全图：任意两顶点都有边，边数 m = n(n-1)/2（如 3 个顶点有 3 条边）。
+
+稠密图：m = O(n^2)（接近完全图)
+稀疏图：m = O(n)（接近完全图）
+
+
+Graph Representation:
+ - Array Representation: 邻接矩阵
+ Adjacency Matrix: O(n²) O(1)
+ 结构：n * n 矩阵 M，M[i][j] 表示顶点 i 到 j 的边权重
+ 优点：快速判断边存在性（O (1)），适合稠密图和小图。缺点：空间复杂度 \(O(n^2)\)，稀疏图浪费空间（如 1000 个顶点需 1MB 空间，无论边数多少）。
+
+ - Linked Representation: 邻接表
+ Adjacency List: O(n + m) O(deg(u))
+ 每个顶点对应一个链表，存储相邻顶点及边权重。
+ 优点：空间高效（仅存储存在的边），适合稀疏图（如 n=1000，m=1000 时空间远小于邻接矩阵
+ 缺点：判断边存在性需遍历链表（O (deg (u))）
+
+ Edge List: 边链表 O(m)	O(m)
+ 简单存储所有边的列表，每条边包含起点、终点、权重（如数组或链表）。
+ 优点：适合边导向算法（如计算总权重）。
+ 缺点：查询邻居需遍历所有边（O (m)），效率低。
+
+ Linked Node: O (nk)（k 为固定度）	O (1)（数组）
+
+Basic Operation:
+创建图、添加 / 删除节点 / 边、销毁图：基础操作，依赖图的表示方法（如邻接矩阵添加边为 O (1)，邻接表需遍历链表）。
+访问节点 / 边数据、查询图属性：获取顶点数、边数、顶点度等，复杂度与表示方法相关（邻接矩阵查询度为 O (n)，邻接表为 O (deg (u))）。
+
+重点：
+1. BFS
+时间 O (n+m)，空间 O (n)（队列和访问数组）。
+Different from tree breadth-first traversal, it needs a data structure to remember visited nodes
+从起点出发，逐层访问所有未访问的邻居节点（按距离递增顺序），使用队列存储待访问节点
+初始化队列和访问数组，将起点入队并标记为已访问。
+循环直到队列为空：
+出队节点 N，处理并加入输出队列。
+将 N 的未访问邻居入队并标记为已访问。
+
+2. DFS
+时间 O (n+m)，空间 O (n)（栈和访问数组）。
+从起点出发，尽可能深入访问邻居节点，遇死胡同后回溯，使用栈（或递归）实现回溯。
+初始化栈和访问数组，将起点入栈并标记为已访问。
+循环直到栈为空：
+出栈节点 N，处理并加入输出队列。
+将 N 的未访问邻居逆序入栈（确保先访问左邻居）。
 
 FINAL REVIEW:
 Converage: Week 4 - 12
 
 NEED TO KNOW HOW TO BUILD HUFFMAN Tree / Expression tree
 no programming questions on avl tree
+
+Examples of short answer questions
+1. Briefly describe the scenarios of using array and linked lists.
+
+ use array when the maximum number is known, and require fast random access;
+ use linked list when the number of element is unknown or changes frequently, and when insertions/deletions occur often
+
+2. Briefly describe the scenarios of using queue and stack.
+ use queue when the order is important(FIFO), BFS, task schduling.
+ use stack(LIFO) in DFS, recursion simulation, expression evaluation;
+
+3. Use Hoffman tree to encode a given sequence of symbol and
+frequencies.
+
+Steps:
+ 1. Create leaf node for each symbol with its sequency
+ 2. Build a min-heap(priority queue) from these nodes based on frequency
+ 3. while there is more than one node in the heap:
+  - Extract the two nodes with the smallest frequencies
+  - Create a new internal node with these two nodes as children
+  - inser the new node back into the min-heap
+
+ 4. the remaining node is the root of the Huffman tree;
+ 5. left tree assign 0, right assign 1
+
+
+4. Get prefix, infix, postfix expression of given expression tree.
+
+prefix: root -> left -> right
+infix: left -> root -> right
+postfix: left -> right -> root
+
+5. Insert a given sequence of key values into BST, AVL
+BST:
+ -if the insert value is smaller than the current node, go to left tree;
+ -if bigger, go to right;
+
+AVL: 
+ -Base on the BST, check the balance factor everytime insert
+
+6. Insert a given sequence of numbers into a hash table using linear probing.
+ - Calculate the hash value: h = key % table_size
+ - If the place got taken, check next place
+ - loop
+
+7. How to represent a set of distinct integers?
+ - Use array/dynamic array 
+ - Use hash table 
+ - Use BST
+
+8. Insert a given sequence of numbers into binary heap, and delete-min 
+ - Insert new value into the heap 
+ - Use heapify up to maintain the heap property
+
+ - Take out the top(min value)
+ - move the last node to the node, and reduce the size of the heap
+ - use heapify down to maintain the heap property
+
+9. Find MST, shortest path in given weighted graphs.
+MST: 
+ - Prim's algorithm:
+  - Start from any nodes
+  each time, the edge with the smallest weight connected to the current spanning tree is selected until all nodes are covered.
+ - Kruskal's algorithm:
+  -
+
+Shortest path:
+ - Dijkstra's algorithm:
+  - Start from any nodes
+  - each time, the edge with the smallest weight connected to the current spanning tree is selected until all nodes are covered.
+
+10.Incremental algorithm and aggregate algorithm for simple stats (count, min, max, mean) computing on linked list and binary tree.
+
+
+Examples of short programing questions
+1. Write C functions to insert an element, to delete elements, search in a singly linked list.
+void insert_front(NODE *start, NODE *np)
+{
+    np->next = start;
+    start = np;
+    return start;
+}
+
+void insert_end(NODE *start, NODE *np)
+{
+    NODE *p = start;
+    while(p->next != NULL)
+    {
+        p = p->next;
+    }
+    p->next = np;
+    np->next = NULL;
+}
+
+void delete_front(NODE **startp)
+{
+    NODE *ptr = *startp;
+    if(ptr != NULL)
+    {
+        *startp = ptr->next;
+        free(ptr);
+    }
+}
+
+void delete_end(NODE **startp)
+{
+    if ((*startp)->next == NULL) {
+        free(*startp); // 释放唯一节点
+        *startp = NULL; // 更新头指针为 NULL
+        return;
+    }
+
+    NODE *current = *startp;
+    NODE *prev = NULL;
+
+    // 遍历到链表的倒数第二个节点
+    while (current->next != NULL) {
+        prev = current;
+        current = current->next;
+    }
+
+    // 删除最后一个节点
+    free(current); // 释放最后一个节点
+    prev->next = NULL; // 倒数第二个节点的 next 指向 NULL
+}
+
+void search(NODE *start, int key)
+{
+    while(start != NULL)
+    {
+        if(start->data == key)
+        {
+            break;
+        }
+        p = p->next;
+    }
+}
+2. Write a C function to display element backward from a singly linked list using iterative algorithm with auxiliary data structure.
+void display_backward(NODE *start)
+{
+    NODE *stack[100];
+    int top = -1;
+    NODE *current = start;
+
+    while(current != NULL)
+    {
+        stack[++top] == current;
+        current = current->next;
+    }
+    while(top >= 0)
+    {
+        printf("%d", stack[top--]->data);
+    }
+}
+3. For binary tree, write C functions to do traversal (in pre-order, in-order and post-order), depth-first-order using array stack, breath-first-order using array queue, to compute number of nodes, height, number of leaves.
+void preorder(TreeNode *root)
+{
+    if(root == NULL) return;
+    prinf("%d", root->data)
+    preorder(root->left);
+    preorder(root->right);
+}
+
+void inorder(TreeNode *root)
+{
+    if(root == NULL) return ;
+    inorder(root->left);
+    prinf("%d", root->data)
+    inorder(root->right);
+}
+
+void postorder(TreeNode *root)
+{
+    if(root == NULL) return;
+    postorder(root->left);
+    postorder(root->right);
+    prinf("%d", root->data)
+}
+
+void dfs(TreeNode *root)
+{
+    if(root == NULL) return;
+
+    if(root)
+    {
+        STACK s = {0};
+        push(&s, root);
+
+        while(s.top)
+        {
+            TNODE *p = (TNODE *)pop(&s);
+
+            printf("%d", p->data);
+
+            if(p->right)
+            {
+                push(&s, p->right)
+            }
+            if(p->left)
+            {
+                push(&s, p->left)
+            }
+        }
+        clean_stack(&s);
+    }
+}
+
+void bfs(TreeNode *root)
+{
+    if(root == NULL) return;
+
+    if(root)
+    {
+        QUEUE q = {0};
+        enqueue(&q, root);
+
+        while(q.front)
+        {
+            TNODE *p = dequeue(&q);
+            if (p->left)
+                enqueue(&q, p->left);
+            if (p->right)
+                enqueue(&q, p->right);
+        }
+    }
+}
+4. For BST, write C functions to search, insert and delete using iterative algorithms.
+TNODE *iterative_bst_search(TNODE *root, int key)
+{
+    TNODE *r = NULL, *p = root;
+    while(p)
+    {
+        if(key == p->data)
+        {
+            r = p;
+            break;
+        }
+        else if(key < p->data)
+            p = p->left;
+        else
+            p = p->right;
+    }
+}
+
+void iterative_insert(TNODE **rootp, TNODE *newnp)
+{
+    if(*rootp == NULL)
+    {
+        *rootp = newnp;
+    }
+    else
+    {
+        TNODE *p = *rootp;
+
+        while(p)
+        {
+            if(newnp->data < p->data)
+            {
+                if(p->left == NULL)
+                {
+                    p->left = newnp;
+                    break;
+                }
+                else
+                {
+                    p = p->left;
+                }
+            }
+            else
+            {
+                if(p->right == NULL)
+                {
+                    p->right = newnp;
+                    break;
+                }
+                else
+                {
+                    p = p->right;
+                }
+            }
+        }
+    }
+}
+
+void iterative_delete(TNODE *rootp, int key)
+{
+    TNODE *parent = NULL;
+    TNODE *current = *rootp;
+
+    while(current != NULL && current->key != key)
+    {
+        parent = current;
+        if(key < current->key)
+        {
+            current = current->left;
+        }
+        else
+        {
+            current = current->right;
+        }
+    }
+
+    if (current == NULL) return;
+
+    if(current->left == NULL && current->right == NULL)
+    {
+        if(parent == NULL)
+        {
+            *rootp = NULL;
+        }
+        else if(parent->left == current)
+        {
+            parent->left = NULL;
+        }
+        else
+        {
+            parent->right = NULL;
+        }
+        free(current);
+    }
+    else if(current->left == NULL || current->right == NULL)
+    {
+        TNODE *child = (current->left) ? current->left : current->right;
+        if(parent == NULL)
+        {
+            *rootp = child;
+        }
+        else if(parent->left == current)
+        {
+            parent->left = child;
+        }
+        else
+        {
+            parent->right = child;
+        }
+    }
+    else if(current->left && current->right)
+    {
+        TNODE *successor = current->right;
+        TNODE *successor_parent = current;
+
+        while(successor->left != NULL)
+        {
+            successor_parent = successor;
+            successor = successor->left;
+        }
+
+        current->data = successor->data;
+
+        if(successor_parent == current)
+        {
+            successor_parent->right = successor->right;
+        }
+        else
+        {
+            successor_parent->left = successor->right;
+        }
+        free(successor);
+    }
+
+}
+5. Hash tables and applications, i.e., design a hash table and function to count words and their frequencies of given text string.
+
+6. Binary heap, heapify-up, heapify-down, heapify, insert, delete-min, change-key, heap sort.
+HEAP *new_heap(int capacity)
+{
+    HEAP *hp = (HEAP *)malloc(sizeof(HEAP));
+    if(hp == NULL)
+    {
+        return NULL;
+    }
+    hp->data = (HEAPDATA *)malloc(sizeof(HEAPDATA) * capacity);
+    if(hp->hda == NULL)
+    {
+        free(hp)'
+        return NULL;
+    }
+    hp->capacity = capacity;
+    hp->size = 0;
+    return hp;
+}
+
+int heapify_up(HEAPDATA *hda, int index)
+{
+    if(index == 0)
+    {
+        return index;
+    }
+
+    int parent = (index - 1) / 2;
+
+    if(cmp(hda[parent].key, hda[index].key) > 0)
+    {
+        HEAPDATA temp  = hda[parent];
+        hda[parent] = hda[index];
+        hda[index] = temp;
+        return heapify_up(hda, parent);
+    }
+    return index;
+}
+
+int heapify_down(HEAPDATA *hda, int n, int index)
+{
+    // your code
+    int smallest = index;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+
+    if (left < n && cmp(hda[left].key, hda[smallest].key) < 0)
+    {
+        smallest = left;
+    }
+
+    if (right < n && cmp(hda[right].key, hda[smallest].key) < 0)
+    {
+        smallest = right;
+    }
+
+    if (smallest != index)
+    {
+        // swap
+        HEAPDATA temp = hda[index];
+        hda[index] = hda[smallest];
+        hda[smallest] = temp;
+        return heapify_down(hda, n, smallest);
+    }
+
+    return index;
+}
+
+int insert(HEAPDATA *hda, HEAPDATA new_data)
+{
+    if(heap->size == heap->capacity)
+    {
+        int new_capacity = heap->capacity * 2;
+        HEAPDATA *new_hda = (HEAPDATA *)malloc(sizeof(HEAPDATA) * new_capacity);  
+        if(new_hda == NULL)
+        {
+            return;
+        }
+
+        heap->hda = new_hda;
+        heap->capacity = new_capacity;
+    }
+
+    heap->hda[heap->size] = new_data;
+    heap->size++;
+    heapify_up(heap->hda, heap->size - 1);
+}
+
+int heap_change_key(HEAPDATA *hda, int index, HEAPDATA new_data)
+{
+    if(index < 0 || index >= heap->size)
+    {
+        return -1;
+    }
+
+    KEYTYPE old_key = heap->hda[index].key;
+    heap->hda[index] = new_data;
+
+    if(new_data.key > old_key)
+    {
+        return heapify_up(heap->hda, index);
+    }
+    else
+    {
+        return heapify_down(heap->hda, heap->size, index);
+    }
+
+    return index;
+}
+7. breadth/depth-first traversal/search on binary trees and graphs, and applications, in adjacency matrix representations. 
